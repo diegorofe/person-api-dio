@@ -1,5 +1,6 @@
 package com.digitalinnovation.personapi.service;
 
+import ch.qos.logback.core.hook.DelayingShutdownHook;
 import com.digitalinnovation.personapi.dto.MessageResponseDTO;
 import com.digitalinnovation.personapi.dto.request.PersonDTO;
 import com.digitalinnovation.personapi.entity.Person;
@@ -46,7 +47,7 @@ public class PersonService {
     }
 
     public PersonDTO findById(Long id) throws PersonNotFoundException {
-        Person person = personRepository.findById(id).orElseThrow(() -> new PersonNotFoundException(id));
+        Person person = verifyExists(id);
         // Optional<Person> optionalPerson = personRepository.findById(id);
 //            if(optionalPerson.isEmpty()){
 //                throw  new PersonNotFoundException(id);
@@ -54,4 +55,17 @@ public class PersonService {
 
              return personMapper.toDTO(person);
     }
+
+
+    public void delete(Long id) throws PersonNotFoundException {
+verifyExists(id);
+personRepository.deleteById(id);
+    }
+
+
+    private Person verifyExists(Long id) throws PersonNotFoundException{
+        return personRepository.findById(id)
+                .orElseThrow(() -> new PersonNotFoundException(id));
+
+        }
 }
